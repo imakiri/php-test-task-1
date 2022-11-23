@@ -21,7 +21,7 @@ modules:
 #    #remote_config: '../codeception.yml'
 #    whitelist:
 #        include:
-#            - models/*
+#            - entities/*
 #            - controllers/*
 #            - commands/*
 #            - mail/*

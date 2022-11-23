@@ -2,7 +2,8 @@
 
 namespace app\controllers;
 
-use app\models\Country;
+use app\repositories\CountryRepository;
+use app\services\CountryService;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\db\Exception;
@@ -13,6 +14,14 @@ use yii\web\Response;
 
 class CountryController extends Controller
 {
+    private CountryService $service;
+
+    function __construct($id, $module, $config = [])
+    {
+        $this->service = new CountryService(new CountryRepository());
+        parent::__construct($id, $module, $config);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -34,19 +43,11 @@ class CountryController extends Controller
      */
     public function actionList(): string
     {
-        $raw_data = (new Country)->list();
-
-        $data = [];
-        foreach ($raw_data as $elem) {
-            $cid = $elem['country_id'];
-            unset($elem['country_id']);
-
-            $data[$cid] = $elem;
-        }
+        $data = $this->service->list();
 
         $resp = Yii::$app->getResponse();
         $resp->format = Response::FORMAT_JSON;
-        $resp->content = Json::encode($data);
+        $resp->content = $data;
         $resp->send();
 
         return "";
@@ -54,23 +55,18 @@ class CountryController extends Controller
 
     /**
      * @throws InvalidConfigException
+     * @throws Exception
      */
     public function actionSet(): string
     {
-        $req = Yii::$app->getRequest();
-        foreach ($req->getBodyParams() as $key => $elem) {
-            $elem['country_id'] = $key;
-            $elem['name_to'] = $elem['nameTo'];
-            unset($elem['nameTo']);
-            unset($elem['departs']);
+        $req = Yii::$app->getRequest()->getBodyParams();
+        $err = $this->service->set($req);
 
-            $country = new Country();
-            $country->attributes = $elem;
-            $country->save();
-
-        }
+        $resp = Yii::$app->getResponse();
+        $resp->format = Response::FORMAT_JSON;
+        $resp->content = Json::encode($err);
+        $resp->send();
 
         return "";
     }
-
 }

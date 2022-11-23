@@ -2,18 +2,27 @@
 
 namespace app\controllers;
 
-use app\models\City;
+use app\repositories\CityRepository;
+use app\services\CityService;
 use Yii;
 use yii\base\InvalidConfigException;
+use yii\db\Exception;
 use yii\rest\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
 
-require 'utils.php';
 
 class CityController extends Controller
 {
+    private CityService $service;
+
+    function __construct($id, $module, $config = [])
+    {
+        $this->service = new CityService(new CityRepository());
+        parent::__construct($id, $module, $config);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -30,17 +39,16 @@ class CityController extends Controller
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function actionList(): string
     {
-        $raw_data = City::find()->all();
-        $data = [];
-        foreach ($raw_data as $elem) {
-            $data[$elem->getAttribute('city_id')] = $elem->getAttributes(null, ['city_id']);
-        }
+        $data = $this->service->list();
 
         $resp = Yii::$app->getResponse();
         $resp->format = Response::FORMAT_JSON;
-        $resp->content = Json::encode($data);
+        $resp->content = $data;
         $resp->send();
 
         return "";
@@ -48,21 +56,18 @@ class CityController extends Controller
 
     /**
      * @throws InvalidConfigException
+     * @throws Exception
      */
     public function actionSet(): string
     {
-        $req = Yii::$app->getRequest();
-        foreach ($req->getBodyParams() as $key => $elem) {
-            $elem['city_id'] = $key;
-            $elem['name_from'] = $elem['nameFrom'];
-            unset($elem['nameFrom']);
+        $req = Yii::$app->getRequest()->getBodyParams();
+        $err = $this->service->set($req);
 
-            $city = new City();
-            $city->attributes = $elem;
-            $city->save();
-        }
+        $resp = Yii::$app->getResponse();
+        $resp->format = Response::FORMAT_JSON;
+        $resp->content = Json::encode($err);
+        $resp->send();
 
         return "";
     }
-
 }

@@ -22,10 +22,6 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
-        'user' => [
-            'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
-        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
@@ -49,8 +45,7 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'city'],
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'country']
+
             ],
         ],
     ],
