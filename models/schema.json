@@ -1,0 +1,136 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/Poedem",
+    "definitions": {
+        "Poedem": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "cities": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/City"
+                    }
+                },
+                "countries": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Country"
+                    }
+                },
+                "directions": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/definitions/Direction"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "cities",
+                "countries",
+                "directions"
+            ],
+            "title": "Poedem"
+        },
+        "City": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "nameFrom": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "name",
+                "nameFrom",
+                "sort"
+            ],
+            "title": "City"
+        },
+        "Country": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "nameTo": {
+                    "type": "string"
+                },
+                "to": {
+                    "$ref": "#/definitions/To"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "departs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "required": [
+                "departs",
+                "name",
+                "nameTo",
+                "sort",
+                "to"
+            ],
+            "title": "Country"
+        },
+        "Direction": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "price": {
+                    "type": "integer"
+                },
+                "cur": {
+                    "$ref": "#/definitions/Cur"
+                },
+                "days": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "defaultDate": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "cur",
+                "days",
+                "defaultDate",
+                "price"
+            ],
+            "title": "Direction"
+        },
+        "To": {
+            "type": "string",
+            "enum": [
+                "в",
+                "на",
+                "во"
+            ],
+            "title": "To"
+        },
+        "Cur": {
+            "type": "string",
+            "enum": [
+                "&nbsp;тг."
+            ],
+            "title": "Cur"
+        }
+    }
+}
